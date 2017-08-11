@@ -1,5 +1,7 @@
 # tweety-twister
 
+[![Build Status](https://travis-ci.org/smortex/tweety-twister.svg?branch=master)](https://travis-ci.org/smortex/tweety-twister)
+
 I have an Adaptec SAS RAID Controller (ASR-3805) that does not present the raw
 disks connected to it.  I can initialize them using the on-board BIOS, add them
 to an array in which each disk is alone (those arrays are "Volumes"), but a big

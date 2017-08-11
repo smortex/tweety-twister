@@ -1,6 +1,9 @@
+.bundle
 CMakeCache.txt
 CMakeFiles
+Gemfile.lock
 Makefile
 check-canaries
 cmake_install.cmake
+tmp
 write-canaries
