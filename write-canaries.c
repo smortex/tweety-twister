@@ -1,6 +1,7 @@
 #include <err.h>
 #include <fcntl.h>
 #include <stdio.h>
+#include <string.h>
 #include <stdlib.h>
 #include <unistd.h>
 
@@ -9,6 +10,7 @@
 int
 main(int argc, char *argv[])
 {
+    char block[BLOCKSIZE];
     const char canaries[] = CANARIES;
 
     if (argc != 2) {
@@ -20,15 +22,35 @@ main(int argc, char *argv[])
 	err(EXIT_FAILURE, "open");
     }
 
-    if (write(fd, canaries, sizeof(canaries)) != sizeof(canaries)) {
-	err(EXIT_FAILURE, "write");
+    if (read(fd, block, sizeof(block)) != sizeof(block)) {
+	err(EXIT_FAILURE, "read");
     }
 
-    if (lseek(fd, -sizeof(canaries), SEEK_END) < 0) {
+    if (lseek(fd, 0, SEEK_SET) < 0) {
 	err(EXIT_FAILURE, "lseek");
     }
 
-    if (write(fd, canaries, sizeof(canaries)) != sizeof(canaries)) {
+    memcpy(block, canaries, sizeof(canaries));
+
+    if (write(fd, block, sizeof(block)) != sizeof(block)) {
+	err(EXIT_FAILURE, "write");
+    }
+
+    if (lseek(fd, -sizeof(block), SEEK_END) < 0) {
+	err(EXIT_FAILURE, "lseek");
+    }
+
+    if (read(fd, block, sizeof(block)) != sizeof(block)) {
+	err(EXIT_FAILURE, "read");
+    }
+
+    if (lseek(fd, -sizeof(block), SEEK_END) < 0) {
+	err(EXIT_FAILURE, "lseek");
+    }
+
+    memcpy(block + sizeof(block) - sizeof(canaries), canaries, sizeof(canaries));
+
+    if (write(fd, block, sizeof(block)) != sizeof(block)) {
 	err(EXIT_FAILURE, "write");
     }
 

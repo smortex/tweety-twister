@@ -10,7 +10,7 @@
 int
 main(int argc, char *argv[])
 {
-    char canaries[] = CANARIES;
+    char block[BLOCKSIZE];
     const char canaries_ref[] = CANARIES;
 
     if (argc != 2) {
@@ -22,23 +22,23 @@ main(int argc, char *argv[])
 	err(EXIT_FAILURE, "open");
     }
 
-    if (read(fd, canaries, sizeof(canaries)) != sizeof(canaries)) {
+    if (read(fd, block, sizeof(block)) != sizeof(block)) {
 	err(EXIT_FAILURE, "read");
     }
 
-    if (memcmp(canaries, canaries_ref, sizeof(canaries)) != 0) {
+    if (memcmp(block, canaries_ref, sizeof(canaries_ref)) != 0) {
 	errx(EXIT_FAILURE, "Wrong canaries at beginning of device");
     }
 
-    if (lseek(fd, -sizeof(canaries), SEEK_END) < 0) {
+    if (lseek(fd, -sizeof(block), SEEK_END) < 0) {
 	err(EXIT_FAILURE, "lseek");
     }
 
-    if (read(fd, canaries, sizeof(canaries)) != sizeof(canaries)) {
+    if (read(fd, block, sizeof(block)) != sizeof(block)) {
 	err(EXIT_FAILURE, "read");
     }
 
-    if (memcmp(canaries, canaries_ref, sizeof(canaries)) != 0) {
+    if (memcmp(block + sizeof(block) - sizeof(canaries_ref), canaries_ref, sizeof(canaries_ref)) != 0) {
 	errx(EXIT_FAILURE, "Wrong canaries at end of device");
     }
 
